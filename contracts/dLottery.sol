@@ -6,6 +6,7 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
 
 error DLottery__NotEnoughEth();
+error DLottery__LotteryIsInProcess();
 error DLottery__WinnerTransferFailed();
 error DLottery__UpkeepNotNeeded();
 
@@ -74,11 +75,15 @@ contract DLottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
         if (msg.value < i_entranceFee) {
             revert DLottery__NotEnoughEth();
         }
+        if (s_lotteryState != LotteryState.OPEN) {
+            revert DLottery__LotteryIsInProcess();
+        }
         s_players.push(payable(msg.sender));
         emit LotteryEntered(msg.sender);
     }
 
     function pickRandomWinner() internal {
+        s_lotteryState = LotteryState.CALCULATING;
         uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -99,7 +104,6 @@ contract DLottery is VRFConsumerBaseV2, KeeperCompatibleInterface {
     }
 
     function selectWinner(uint256 randomWord) private {
-        s_lotteryState = LotteryState.CALCULATING;
         uint256 winnerIndex = randomWord % s_players.length;
         s_recentWinner = s_players[winnerIndex];
         (bool isSuccess, ) = s_recentWinner.call{value: address(this).balance}(

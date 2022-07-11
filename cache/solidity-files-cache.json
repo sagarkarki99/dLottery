@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/fmpclt157/Documents/projects/solidity/dLottery/contracts/dLottery.sol": {
-      "lastModificationDate": 1657291412708,
-      "contentHash": "263031df203efcc0b2405e6dba47fb90",
+      "lastModificationDate": 1657301975001,
+      "contentHash": "a3ed1e687169dbb2311161e9baa76907",
       "sourceName": "contracts/dLottery.sol",
       "solcConfig": {
         "version": "0.8.7",
